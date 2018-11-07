@@ -1,0 +1,123 @@
+﻿@{
+    ViewBag.Title = "Period Overlap Checker";
+}
+
+<h2>Period Overlap Checker</h2>
+<div class="row">
+    <h4>Eerste periode:</h4>
+    <div class="col-sm-2">
+        <div class="form-group">
+            <div class="input-group date" id="datepicker1" data-target-input="nearest">
+                <input type="text" class="form-control datepicker-input" data-target="#datepicker1" />
+                <div class="input-group-append" data-target="#datepicker1" data-toggle="datetimepicker">
+                    <div class="input-group-text">
+                        <i class="fa fa-calendar"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <span>tot en met</span>
+    <div class="col-sm-2">
+        <div class="form-group">
+            <div class="input-group date" id="datepicker2" data-target-input="nearest">
+                <input type="text" class="form-control datepicker-input" data-target="#datepicker2" />
+                <div class="input-group-append" data-target="#datepicker2" data-toggle="datetimepicker">
+                    <div class="input-group-text">
+                        <i class="fa fa-calendar"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <h4>Tweede periode:</h4>
+    <div class="col-sm-2">
+        <div class="form-group">
+            <div class="input-group date" id="datepicker3" data-target-input="nearest">
+                <input type="text" class="form-control datepicker-input" data-target="#datepicker3" />
+                <div class="input-group-append" data-target="#datepicker3" data-toggle="datetimepicker">
+                    <div class="input-group-text">
+                        <i class="fa fa-calendar"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <span>tot en met</span>
+    <div class="col-sm-2">
+        <div class="form-group">
+            <div class="input-group date" id="datepicker4" data-target-input="nearest">
+                <input type="text" class="form-control datepicker-input" data-target="#datepicker4" />
+                <div class="input-group-append" data-target="#datepicker4" data-toggle="datetimepicker">
+                    <div class="input-group-text">
+                        <i class="fa fa-calendar"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<button id="submit-dates" class="btn btn-lg">Verstuur</button>
+
+<div id="result"></div>
+
+@section Scripts
+{
+    <script type="text/javascript">
+        const options = {
+            format: 'L',
+            locale: 'nl'
+        };
+
+        $(function() {
+            $('#datepicker1').datetimepicker(options);
+            $('#datepicker2').datetimepicker(options);
+            $('#datepicker3').datetimepicker(options);
+            $('#datepicker4').datetimepicker(options);
+
+            $('#submit-dates').click(function() {
+                console.log('submit');
+
+                let dates = [];
+                let err = '';
+                for (let i = 0; i < 4; i++) {
+                    let date = $(`#datepicker${i + 1}`).datetimepicker('date');
+                    if (typeof date === 'undefined' || date === null || !date.isValid) {
+                        err = 'Voeg a.u.b twee geldige periodes toe';
+                    }
+                    dates[i] = date;
+                };
+
+                if (err) {
+                    $('#result').text(err);
+                } else {
+                    $.ajax({
+                        method: 'POST',
+                        url: 'http://localhost:44344/api/periodcheck',
+                        data: JSON.stringify({
+                            period1: [dates[0].toDate().toISOString(), dates[1].toDate().toISOString()],
+                            period2: [dates[2].toDate().toISOString(), dates[3].toDate().toISOString()]
+                        }),
+                        dataType: 'json',
+                        contentType: 'application/json',
+                        success: function(data) {
+                            if (data.overlap) {
+                                $('#result').text(`JA`);
+
+                            } else {
+                                $('#result').text(`NEE`);
+                            }
+                        },
+                        error: function(xhr) {
+                            $('#result').text(xhr.responseText);
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+}

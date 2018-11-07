@@ -1,0 +1,13 @@
+{
+  "name": "PeriodOverlapChecker",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "Martijn van de Wetering",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "bootstrap": "^4.1.3",
+    "font-awesome": "^4.7.0",
+    "tempusdominus-bootstrap-4": "^5.1.2"
+  }
+}
