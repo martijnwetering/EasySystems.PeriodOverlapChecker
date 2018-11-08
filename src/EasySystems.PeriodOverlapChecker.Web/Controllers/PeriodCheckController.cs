@@ -18,6 +18,10 @@ namespace EasySystems.PeriodOverlapChecker.Web.Controllers
         [HttpPost]
         public IActionResult CheckPeriod([FromBody]PeriodCheckModel periods)
         {
+            if (periods == null)
+            {
+                return BadRequest("Voeg a.u.b twee geldige periodes toe");
+            }
 
             var firstPeriodResult = Period.Create(periods.Period1[0], periods.Period1[1]);
             var secondPeriodResult = Period.Create(periods.Period2[0], periods.Period2[1]);
